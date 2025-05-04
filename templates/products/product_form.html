@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_prodid" class="form-label">Product ID</label>
+                        {{ form.prodid }}
+                        <div class="form-text">Leave blank to auto-generate</div>
+                        {% if form.prodid.errors %}
+                            <div class="text-danger">{{ form.prodid.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_pname" class="form-label">Product Name</label>
+                        {{ form.pname }}
+                        {% if form.pname.errors %}
+                            <div class="text-danger">{{ form.pname.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_prate" class="form-label">Price (USD)</label>
+                        {{ form.prate }}
+                        {% if form.prate.errors %}
+                            <div class="text-danger">{{ form.prate.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_mfd" class="form-label">Manufacture Date</label>
+                        {{ form.mfd }}
+                        {% if form.mfd.errors %}
+                            <div class="text-danger">{{ form.mfd.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_pdesc" class="form-label">Description</label>
+                        {{ form.pdesc }}
+                        {% if form.pdesc.errors %}
+                            <div class="text-danger">{{ form.pdesc.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_madeof" class="form-label">Material</label>
+                            {{ form.madeof }}
+                            {% if form.madeof.errors %}
+                                <div class="text-danger">{{ form.madeof.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="id_wt" class="form-label">Weight</label>
+                            {{ form.wt }}
+                            {% if form.wt.errors %}
+                                <div class="text-danger">{{ form.wt.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="id_wtunit" class="form-label">Weight Unit</label>
+                            {{ form.wtunit }}
+                            {% if form.wtunit.errors %}
+                                <div class="text-danger">{{ form.wtunit.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="id_minstk" class="form-label">Minimum Stock</label>
+                            {{ form.minstk }}
+                            {% if form.minstk.errors %}
+                                <div class="text-danger">{{ form.minstk.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_reorderstk" class="form-label">Reorder Stock</label>
+                            {{ form.reorderstk }}
+                            {% if form.reorderstk.errors %}
+                                <div class="text-danger">{{ form.reorderstk.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="id_pforunit" class="form-label">Product Unit for Cost</label>
+                            {{ form.pforunit }}
+                            {% if form.pforunit.errors %}
+                                <div class="text-danger">{{ form.pforunit.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_pcat" class="form-label">Category</label>
+                        {{ form.pcat }}
+                        {% if form.pcat.errors %}
+                            <div class="text-danger">{{ form.pcat.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_img" class="form-label">Product Image</label>
+                        {{ form.img }}
+                        {% if form.img.errors %}
+                            <div class="text-danger">{{ form.img.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

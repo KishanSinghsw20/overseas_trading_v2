@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block title %}Invoice {{ invoice.invno }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_list' %}">Orders</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_detail' invoice.ordno.ordno %}">Order {{ invoice.ordno.ordno }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Invoice {{ invoice.invno }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Invoice #{{ invoice.invno }}</h4>
+                    <button class="btn btn-light" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Invoice
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>From</h5>
+                        <address>
+                            <strong>Overseas Trading</strong><br>
+                            123 Trading Street<br>
+                            Mumbai, India<br>
+                            Phone: +91 1234567890<br>
+                            Email: info@overseastrading.com
+                        </address>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <h5>To</h5>
+                        <address>
+                            <strong>{{ invoice.ordno.cltid.cname }}</strong><br>
+                            {{ invoice.ordno.cltid.cadd|linebreaks }}<br>
+                            Phone: {{ invoice.ordno.cltid.cph }}<br>
+                            Email: {{ invoice.ordno.cltid.cemail }}
+                        </address>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Invoice Number:</th>
+                                <td>{{ invoice.invno }}</td>
+                            </tr>
+                            <tr>
+                                <th>Order Number:</th>
+                                <td>{{ invoice.ordno.ordno }}</td>
+                            </tr>
+                            <tr>
+                                <th>Invoice Date:</th>
+                                <td>{{ invoice.recvdt }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Payment Due:</th>
+                                <td>{{ invoice.paydt }}</td>
+                            </tr>
+                            <tr>
+                                <th>Expected Delivery:</th>
+                                <td>{{ invoice.dddt }}</td>
+                            </tr>
+                            <tr>
+                                <th>Payment Status:</th>
+                                <td>
+                                    {% if invoice.rempay == 0 %}
+                                    <span class="badge bg-success">Paid</span>
+                                    {% elif invoice.rempay < invoice.netamt %}
+                                    <span class="badge bg-warning text-dark">Partially Paid</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Unpaid</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Description</th>
+                                <th class="text-end">Quantity</th>
+                                <th class="text-end">Unit Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                            <tr>
+                                <td>{{ item.prodid.pname }}</td>
+                                <td>{{ item.prodid.pdesc|truncatechars:100 }}</td>
+                                <td class="text-end">{{ item.quantity }}</td>
+                                <td class="text-end currency">{{ item.rate }}</td>
+                                <td class="text-end currency">{{ item.amt }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4" class="text-end">Subtotal:</th>
+                                <td class="text-end currency">{{ invoice.gamt }}</td>
+                            </tr>
+                            {% if invoice.othrchrg1 > 0 %}
+                            <tr>
+                                <th colspan="4" class="text-end">Other Charges 1:</th>
+                                <td class="text-end currency">{{ invoice.othrchrg1 }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if invoice.othrchrg2 > 0 %}
+                            <tr>
+                                <th colspan="4" class="text-end">Other Charges 2:</th>
+                                <td class="text-end currency">{{ invoice.othrchrg2 }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if invoice.othrchrg3 > 0 %}
+                            <tr>
+                                <th colspan="4" class="text-end">Other Charges 3:</th>
+                                <td class="text-end currency">{{ invoice.othrchrg3 }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if invoice.othrchrg4 > 0 %}
+                            <tr>
+                                <th colspan="4" class="text-end">Other Charges 4:</th>
+                                <td class="text-end currency">{{ invoice.othrchrg4 }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th colspan="4" class="text-end">Total:</th>
+                                <td class="text-end currency">{{ invoice.netamt }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="text-end">Advance Payment:</th>
+                                <td class="text-end currency">{{ invoice.advpay }}</td>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="text-end">Remaining Payment:</th>
+                                <td class="text-end currency">{{ invoice.rempay }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <h5>Payment Terms</h5>
+                        <p>
+                            Payment is due by {{ invoice.paydt }}. Please make payment to the bank account details provided below.
+                            All payments should be made in USD.
+                        </p>
+                        <p>
+                            <strong>Bank Name:</strong> International Bank<br>
+                            <strong>Account Name:</strong> Overseas Trading<br>
+                            <strong>Account Number:</strong> 1234567890<br>
+                            <strong>SWIFT Code:</strong> INTLBANK
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-end mt-4">
+                            <p>Authorized Signature</p>
+                            <hr style="width: 75%; margin-left: auto;">
+                            <p>Overseas Trading</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if payments %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Payment History</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Payment #</th>
+                                <th>Type</th>
+                                <th>DD/Cheque #</th>
+                                <th>Date</th>
+                                <th>On</th>
+                                <th>Status</th>
+                                <th>For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.payno }}</td>
+                                <td>{{ payment.paytype }}</td>
+                                <td>{{ payment.ddchqno }}</td>
+                                <td>{{ payment.ddchqdt }}</td>
+                                <td>{{ payment.on }}</td>
+                                <td>
+                                    {% if payment.pstatus == 'Completed' %}
+                                    <span class="badge bg-success">{{ payment.pstatus }}</span>
+                                    {% elif payment.pstatus == 'Pending' %}
+                                    <span class="badge bg-warning text-dark">{{ payment.pstatus }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">{{ payment.pstatus }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ payment.payfor }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if deliveries %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Delivery Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Delivery Code</th>
+                                <th>Branch</th>
+                                <th>Mode</th>
+                                <th>Date</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for delivery in deliveries %}
+                            <tr>
+                                <td>{{ delivery.delcode }}</td>
+                                <td>{{ delivery.branch.branch }}</td>
+                                <td>{{ delivery.delmode }}</td>
+                                <td>{{ delivery.deldt }}</td>
+                                <td>{{ delivery.source }}</td>
+                                <td>{{ delivery.destination }}</td>
+                                <td>
+                                    {% if delivery.delstatus == 'Delivered' %}
+                                    <span class="badge bg-success">{{ delivery.delstatus }}</span>
+                                    {% elif delivery.delstatus == 'In Transit' %}
+                                    <span class="badge bg-warning text-dark">{{ delivery.delstatus }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ delivery.delstatus }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'delivery_tracking' delivery.delcode %}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-truck"></i> Track
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.pname }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.pname }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm">
+            <img src="{{ product.img.url }}" class="card-img-top img-fluid" alt="{{ product.pname }}">
+            {% if not user.client_profile %}
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'product_update' product.prodid %}" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'product_delete' product.prodid %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">{{ product.pname }}</h3>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-3 currency">{{ product.prate }}</h4>
+                
+                <div class="mb-4">
+                    <h5>Description</h5>
+                    <p>{{ product.pdesc }}</p>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Specifications</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Material:</span>
+                                <span class="fw-bold">{{ product.madeof }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Weight:</span>
+                                <span class="fw-bold">{{ product.wt }} {{ product.wtunit }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Category:</span>
+                                <span class="fw-bold">{{ product.pcat }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Manufactured:</span>
+                                <span class="fw-bold">{{ product.mfd|date:"F j, Y" }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>Stock Information</h5>
+                        {% if stock %}
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Current Stock:</span>
+                                <span class="fw-bold">{{ stock.currstk }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Stock Type:</span>
+                                <span class="fw-bold">{{ stock.stktype }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Last Updated:</span>
+                                <span class="fw-bold">{{ stock.stkdt|date:"F j, Y" }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Status:</span>
+                                {% if stock.currstk > product.minstk %}
+                                <span class="badge bg-success">In Stock</span>
+                                {% elif stock.currstk > 0 %}
+                                <span class="badge bg-warning text-dark">Low Stock</span>
+                                {% else %}
+                                <span class="badge bg-danger">Out of Stock</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                        {% else %}
+                        <div class="alert alert-warning">
+                            No stock information available.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if user.is_authenticated and user.client_profile %}
+                <form method="POST" action="{% url 'order_create' %}" class="mt-4">
+                    {% csrf_token %}
+                    <input type="hidden" name="prodid" value="{{ product.prodid }}">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label for="quantity" class="col-form-label">Quantity:</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-cart-plus"></i> Order Now
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+                
+                {% if not user.client_profile %}
+                <div class="mt-4">
+                    <a href="{% url 'stock_create' product.prodid %}" class="btn btn-success me-2">
+                        <i class="bi bi-plus-circle"></i> Update Stock
+                    </a>
+                    <a href="{% url 'branch_stock_create' product.prodid %}" class="btn btn-info">
+                        <i class="bi bi-plus-circle"></i> Update Branch Stock
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not user.client_profile and branch_stocks %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Branch Stock Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Branch</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Last Updated</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for branch_stock in branch_stocks %}
+                            <tr>
+                                <td>{{ branch_stock.branch.branch }}</td>
+                                <td>{{ branch_stock.branch.bloc }}</td>
+                                <td>{{ branch_stock.qty }}</td>
+                                <td>{{ branch_stock.unit }}</td>
+                                <td>{{ branch_stock.dt|date:"F j, Y" }}</td>
+                                <td>
+                                    {% if branch_stock.qty > product.minstk %}
+                                    <span class="badge bg-success">In Stock</span>
+                                    {% elif branch_stock.qty > 0 %}
+                                    <span class="badge bg-warning text-dark">Low Stock</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No branch stock information available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

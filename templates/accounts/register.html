@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <h5 class="mb-3">Account Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        {{ user_form.username }}
+                        <div class="form-text">{{ user_form.username.help_text }}</div>
+                        {% if user_form.username.errors %}
+                            <div class="text-danger">{{ user_form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                            <div class="text-danger">{{ user_form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password</label>
+                        {{ user_form.password1 }}
+                        <div class="form-text">{{ user_form.password1.help_text }}</div>
+                        {% if user_form.password1.errors %}
+                            <div class="text-danger">{{ user_form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Password Confirmation</label>
+                        {{ user_form.password2 }}
+                        <div class="form-text">{{ user_form.password2.help_text }}</div>
+                        {% if user_form.password2.errors %}
+                            <div class="text-danger">{{ user_form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Client Information</h5>
+                    
+                    <div class="mb-3">
+                        <label for="id_cname" class="form-label">Company Name</label>
+                        {{ client_form.cname }}
+                        {% if client_form.cname.errors %}
+                            <div class="text-danger">{{ client_form.cname.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_cadd" class="form-label">Address</label>
+                        {{ client_form.cadd }}
+                        {% if client_form.cadd.errors %}
+                            <div class="text-danger">{{ client_form.cadd.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cph" class="form-label">Phone Number</label>
+                            {{ client_form.cph }}
+                            {% if client_form.cph.errors %}
+                                <div class="text-danger">{{ client_form.cph.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cphalt" class="form-label">Alternate Phone Number</label>
+                            {{ client_form.cphalt }}
+                            {% if client_form.cphalt.errors %}
+                                <div class="text-danger">{{ client_form.cphalt.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_cfax" class="form-label">Fax Number</label>
+                        {{ client_form.cfax }}
+                        {% if client_form.cfax.errors %}
+                            <div class="text-danger">{{ client_form.cfax.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_ccperson" class="form-label">Contact Person</label>
+                            {{ client_form.ccperson }}
+                            {% if client_form.ccperson.errors %}
+                                <div class="text-danger">{{ client_form.ccperson.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_cdesig" class="form-label">Designation</label>
+                            {{ client_form.cdesig }}
+                            {% if client_form.cdesig.errors %}
+                                <div class="text-danger">{{ client_form.cdesig.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_btype" class="form-label">Business Type</label>
+                        {{ client_form.btype }}
+                        {% if client_form.btype.errors %}
+                            <div class="text-danger">{{ client_form.btype.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_profile" class="form-label">Company Profile</label>
+                        {{ client_form.profile }}
+                        {% if client_form.profile.errors %}
+                            <div class="text-danger">{{ client_form.profile.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

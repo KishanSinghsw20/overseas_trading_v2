@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Orders - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Orders</h1>
+    <div>
+        <a href="{% url 'order_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Order
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        {% if not user.client_profile %}
+                        <th>Client</th>
+                        {% endif %}
+                        <th>Order Date</th>
+                        <th>Required Date</th>
+                        <th>Total Amount</th>
+                        <th>Invoice Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.ordno }}</td>
+                        {% if not user.client_profile %}
+                        <td>{{ order.cltid.cname }}</td>
+                        {% endif %}
+                        <td>{{ order.ordt }}</td>
+                        <td>{{ order.reqdt }}</td>
+                        <td><span class="currency">{{ order.totamt }}</span></td>
+                        <td>
+                            {% if order.invoice_set.exists %}
+                                {% with invoice=order.invoice_set.first %}
+                                    {% if invoice.rempay == 0 %}
+                                    <span class="badge bg-success">Paid</span>
+                                    {% elif invoice.rempay < invoice.netamt %}
+                                    <span class="badge bg-warning text-dark">Partially Paid</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Unpaid</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% else %}
+                            <span class="badge bg-secondary">No Invoice</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'order_detail' order.ordno %}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if not user.client_profile and not order.invoice_set.exists %}
+                            <a href="{% url 'generate_invoice' order.ordno %}" class="btn btn-sm btn-success">
+                                <i class="bi bi-receipt"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if not user.client_profile %}7{% else %}6{% endif %}" class="text-center">No orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

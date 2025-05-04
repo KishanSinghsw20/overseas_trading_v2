@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Admin Dashboard</h1>
+    <div>
+        <a href="{% url 'product_create' %}" class="btn btn-primary me-2">
+            <i class="bi bi-plus-circle"></i> Add Product
+        </a>
+        <a href="{% url 'branch_create' %}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Add Branch
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase">Products</h6>
+                        <h2 class="mb-0">{{ products_count }}</h2>
+                    </div>
+                    <div class="fs-1">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                </div>
+                <a href="{% url 'product_list' %}" class="text-white">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase">Clients</h6>
+                        <h2 class="mb-0">{{ clients_count }}</h2>
+                    </div>
+                    <div class="fs-1">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <a href="{% url 'client_list' %}" class="text-white">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase">Orders</h6>
+                        <h2 class="mb-0">{{ orders_count }}</h2>
+                    </div>
+                    <div class="fs-1">
+                        <i class="bi bi-cart-check"></i>
+                    </div>
+                </div>
+                <a href="{% url 'order_list' %}" class="text-white">View all <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Orders -->
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Recent Orders</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Client</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td>{{ order.ordno }}</td>
+                                <td>{{ order.cltid.cname }}</td>
+                                <td>{{ order.ordt }}</td>
+                                <td><span class="currency">{{ order.totamt }}</span></td>
+                                <td>
+                                    <a href="{% url 'order_detail' order.ordno %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No recent orders</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'order_list' %}" class="btn btn-outline-primary">View All Orders</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
