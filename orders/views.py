@@ -1,3 +1,6 @@
+import json
+from django import forms
+from django.forms import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -71,39 +74,132 @@ def order_detail(request, ordno):
     )
 
 
+# @login_required
+# def order_create(request):
+#     if request.method == "POST":
+#         form = OrderForm(request.POST)
+#         if form.is_valid():
+#             with transaction.atomic():
+#                 order = form.save(commit=False)
+#                 order.ordno = f"ORD{uuid.uuid4().hex[:8].upper()}"
+
+#                 if hasattr(request.user, "client_profile"):
+#                     client = request.user.client_profile
+#                     order.cltid = client
+
+#                 order.totamt = 0  # Will be updated as items are added
+#                 order.save()
+
+#                 messages.success(
+#                     request, "Order created successfully! Now add items to your order."
+#                 )
+#                 return redirect("order_add_item", ordno=order.ordno)
+#     else:
+#         form = OrderForm()
+
+#         if hasattr(request.user, "client_profile"):
+#             client = request.user.client_profile
+#             form.fields["cltid"].initial = client
+#             form.fields["cltid"].widget.attrs["readonly"] = True
+
+
+#     return render(
+#         request, "orders/order_form.html", {"form": form, "title": "Create Order"}
+#     )
+# orders/views.py
 @login_required
 def order_create(request):
     if request.method == "POST":
         form = OrderForm(request.POST)
         if form.is_valid():
-            with transaction.atomic():
-                order = form.save(commit=False)
-                order.ordno = f"ORD{uuid.uuid4().hex[:8].upper()}"
+            try:
+                with transaction.atomic():
+                    order = form.save(commit=False)
+                    order.ordno = f"ORD{uuid.uuid4().hex[:8].upper()}"
 
-                if hasattr(request.user, "client_profile"):
-                    client = request.user.client_profile
-                    order.cltid = client
+                    if hasattr(request.user, "client_profile"):
+                        client = request.user.client_profile
+                        order.cltid = client
 
-                order.totamt = 0  # Will be updated as items are added
-                order.save()
+                    order.totamt = 0  # Will be updated as items are added
+                    order.save()
 
-                messages.success(
-                    request, "Order created successfully! Now add items to your order."
-                )
-                return redirect("order_add_item", ordno=order.ordno)
+                    messages.success(
+                        request,
+                        "Order created successfully! Now add items to your order.",
+                    )
+                    return redirect("order_add_item", ordno=order.ordno)
+            except Exception as e:
+                messages.error(request, f"Error creating order: {str(e)}")
+                print(f"Error creating order: {str(e)}")
+        # else:
+        #     # Print form errors for debugging
+        #     print(f"Form errors: {form.errors}")
+        #     messages.error(request, f"Form validation failed: {form.errors}")
     else:
         form = OrderForm()
 
         if hasattr(request.user, "client_profile"):
             client = request.user.client_profile
             form.fields["cltid"].initial = client
-            form.fields["cltid"].widget.attrs["readonly"] = True
+            form.fields["cltid"].widget = (
+                forms.HiddenInput()
+            )  # Hide instead of readonly
 
     return render(
         request, "orders/order_form.html", {"form": form, "title": "Create Order"}
     )
 
 
+# @login_required
+# def order_add_item(request, ordno):
+#     order = get_object_or_404(OrdMast, ordno=ordno)
+
+#     # Check if user has permission to modify this order
+#     if hasattr(request.user, "client_profile"):
+#         client = request.user.client_profile
+#         if order.cltid != client:
+#             messages.error(request, "You do not have permission to modify this order.")
+#             return redirect("order_list")
+
+#     if request.method == "POST":
+#         form = ClientOrderForm(request.POST)
+#         if form.is_valid():
+#             with transaction.atomic():
+#                 item = form.save(commit=False)
+#                 item.ordno = order
+
+#                 # Calculate amount
+#                 product = item.prodid
+#                 item.rate = product.prate
+#                 item.amt = item.quantity * item.rate
+#                 item.qtygv = (
+#                     item.quantity
+#                 )  # Initially, we plan to give the full quantity
+
+#                 item.save()
+
+#                 # Update order total
+#                 order.totamt += item.amt
+#                 order.save()
+
+#                 messages.success(request, "Item added to order successfully!")
+
+#                 if "add_another" in request.POST:
+#                     return redirect("order_add_item", ordno=order.ordno)
+#                 else:
+#                     return redirect("order_detail", ordno=order.ordno)
+#     else:
+#         form = ClientOrderForm()
+
+#     existing_items = ClientOrd.objects.filter(ordno=order)
+
+
+#     return render(
+#         request,
+#         "orders/order_item_form.html",
+#         {"form": form, "order": order, "existing_items": existing_items},
+#     )
 @login_required
 def order_add_item(request, ordno):
     order = get_object_or_404(OrdMast, ordno=ordno)
@@ -118,39 +214,69 @@ def order_add_item(request, ordno):
     if request.method == "POST":
         form = ClientOrderForm(request.POST)
         if form.is_valid():
-            with transaction.atomic():
-                item = form.save(commit=False)
-                item.ordno = order
+            try:
+                with transaction.atomic():
+                    item = form.save(commit=False)
+                    item.ordno = order
 
-                # Calculate amount
-                product = item.prodid
-                item.rate = product.prate
-                item.amt = item.quantity * item.rate
-                item.qtygv = (
-                    item.quantity
-                )  # Initially, we plan to give the full quantity
+                    # Calculate amount
+                    product = item.prodid
+                    item.rate = product.prate  # Set rate from product
+                    item.amt = item.quantity * item.rate
+                    item.qtygv = (
+                        item.quantity
+                    )  # Initially, we plan to give the full quantity
 
-                item.save()
+                    # Check if we have enough stock
+                    if hasattr(product, "stock_set") and product.stock_set.exists():
+                        stock = product.stock_set.first()
+                        if stock.currstk < item.quantity:
+                            messages.error(
+                                request,
+                                f"Not enough stock available. Only {stock.currstk} units available.",
+                            )
+                            raise ValidationError("Insufficient stock")
 
-                # Update order total
-                order.totamt += item.amt
-                order.save()
+                    item.save()
 
-                messages.success(request, "Item added to order successfully!")
+                    # Update order total
+                    order.totamt += item.amt
+                    order.save()
 
-                if "add_another" in request.POST:
-                    return redirect("order_add_item", ordno=order.ordno)
-                else:
-                    return redirect("order_detail", ordno=order.ordno)
+                    messages.success(request, "Item added to order successfully!")
+
+                    if "add_another" in request.POST:
+                        return redirect("order_add_item", ordno=order.ordno)
+                    else:
+                        return redirect("order_detail", ordno=order.ordno)
+            except ValidationError as e:
+                # Just show the message, form will be re-rendered
+                pass
+            except Exception as e:
+                messages.error(request, f"Error adding item: {str(e)}")
+                print(f"Error adding item: {str(e)}")
+        else:
+            # Print form errors for debugging
+            print(f"Form errors: {form.errors}")
+            messages.error(request, f"Form validation failed: {form.errors}")
     else:
         form = ClientOrderForm()
 
     existing_items = ClientOrd.objects.filter(ordno=order)
 
+    # Add product prices as data attributes for JavaScript
+    products = Product.objects.all()
+    product_prices = {str(p.prodid): float(p.prate) for p in products}
+
     return render(
         request,
         "orders/order_item_form.html",
-        {"form": form, "order": order, "existing_items": existing_items},
+        {
+            "form": form,
+            "order": order,
+            "existing_items": existing_items,
+            "product_prices": json.dumps(product_prices),
+        },
     )
 
 

@@ -1,4 +1,7 @@
 from django import forms
+from django.urls import reverse
+
+from products.models import Product
 from .models import (
     OrdMast,
     ClientOrd,
@@ -12,16 +15,23 @@ from .models import (
 class OrderForm(forms.ModelForm):
     class Meta:
         model = OrdMast
-        fields = ["ordno", "reqdt", "cltid"]
+        fields = ["reqdt", "cltid"]
         widgets = {
-            "reqdt": forms.DateInput(attrs={"type": "date"}),
+            "reqdt": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "cltid": forms.Select(attrs={"class": "form-control"}),
         }
 
 
 class ClientOrderForm(forms.ModelForm):
     class Meta:
         model = ClientOrd
-        fields = ["prodid", "quantity", "rate"]
+        fields = ["prodid", "quantity"]
+        widgets = {
+            "prodid": forms.Select(attrs={"class": "form-control"}),
+            "quantity": forms.NumberInput(
+                attrs={"class": "form-control quantity-input", "min": "1"}
+            ),
+        }
 
 
 class InvoiceForm(forms.ModelForm):

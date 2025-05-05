@@ -26,7 +26,12 @@
                     
                     <div class="mb-3">
                         <label for="id_prodid" class="form-label">Product</label>
-                        {{ form.prodid }}
+                        <select name="prodid" id="id_prodid" class="form-control">
+                            <option value="">---------</option>
+                            {% for product in form.fields.prodid.queryset %}
+                            <option value="{{ product.prodid }}" data-price="{{ product.prate }}">{{ product }}</option>
+                            {% endfor %}
+                        </select>
                         {% if form.prodid.errors %}
                             <div class="text-danger">{{ form.prodid.errors }}</div>
                         {% endif %}
@@ -34,10 +39,21 @@
                     
                     <div class="mb-3">
                         <label for="id_quantity" class="form-label">Quantity</label>
-                        {{ form.quantity }}
+                        <input type="number" name="quantity" id="id_quantity" class="form-control quantity-input" min="1" value="1">
                         {% if form.quantity.errors %}
                             <div class="text-danger">{{ form.quantity.errors }}</div>
                         {% endif %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Unit Price ($)</label>
+                            <div class="form-control bg-light" id="product-price">0.00</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Total ($)</label>
+                            <div class="form-control bg-light" id="total-price">0.00</div>
+                        </div>
                     </div>
                     
                     <div class="d-flex justify-content-between">
@@ -118,4 +134,44 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the product and quantity inputs
+    const productSelect = document.getElementById('id_prodid');
+    const quantityInput = document.getElementById('id_quantity');
+    const priceDisplay = document.getElementById('product-price');
+    const totalDisplay = document.getElementById('total-price');
+    
+    // Function to update the price and total
+    function updatePriceAndTotal() {
+        if (productSelect.selectedIndex > 0) {
+            // Get the selected option
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            // Get the price from the data attribute
+            const price = parseFloat(selectedOption.getAttribute('data-price') || 0);
+            // Get the quantity
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            // Update the displays
+            if (priceDisplay) priceDisplay.textContent = price.toFixed(2);
+            if (totalDisplay) totalDisplay.textContent = (price * quantity).toFixed(2);
+        }
+    }
+    
+    // Add event listeners
+    if (productSelect) {
+        productSelect.addEventListener('change', updatePriceAndTotal);
+    }
+    
+    if (quantityInput) {
+        quantityInput.addEventListener('input', updatePriceAndTotal);
+    }
+    
+    // Initial update
+    updatePriceAndTotal();
+});
+</script>
 {% endblock %}

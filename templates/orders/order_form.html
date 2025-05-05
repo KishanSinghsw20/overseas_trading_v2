@@ -23,7 +23,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     
-                    {% if not user.client_profile %}
+                    {% comment %} {% if not user.client_profile %} {% endcomment %}
                     <div class="mb-3">
                         <label for="id_cltid" class="form-label">Client</label>
                         {{ form.cltid }}
@@ -31,7 +31,7 @@
                             <div class="text-danger">{{ form.cltid.errors }}</div>
                         {% endif %}
                     </div>
-                    {% endif %}
+                    {% comment %} {% endif %} {% endcomment %}
                     
                     <div class="mb-3">
                         <label for="id_reqdt" class="form-label">Required Date</label>
