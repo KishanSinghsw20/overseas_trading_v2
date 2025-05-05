@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Payment for Invoice {{ invoice.invno }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_list' %}">Orders</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_detail' invoice.ordno.ordno %}">Order {{ invoice.ordno.ordno }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'invoice_detail' invoice.invno %}">Invoice {{ invoice.invno }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Payment</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Add Payment for Invoice {{ invoice.invno }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_paytype" class="form-label">Payment Type</label>
+                        {{ form.paytype }}
+                        {% if form.paytype.errors %}
+                            <div class="text-danger">{{ form.paytype.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_payfor" class="form-label">Payment For</label>
+                        {{ form.payfor }}
+                        {% if form.payfor.errors %}
+                            <div class="text-danger">{{ form.payfor.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_amount" class="form-label">Amount</label>
+                        <input type="number" step="0.01" name="amount" id="id_amount" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_ddchqno" class="form-label">DD/Cheque Number (if applicable)</label>
+                        {{ form.ddchqno }}
+                        {% if form.ddchqno.errors %}
+                            <div class="text-danger">{{ form.ddchqno.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_ddchqdt" class="form-label">DD/Cheque Date (if applicable)</label>
+                        {{ form.ddchqdt }}
+                        {% if form.ddchqdt.errors %}
+                            <div class="text-danger">{{ form.ddchqdt.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_on" class="form-label">On (Bank/Institution)</label>
+                        {{ form.on }}
+                        {% if form.on.errors %}
+                            <div class="text-danger">{{ form.on.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_pstatus" class="form-label">Payment Status</label>
+                        {{ form.pstatus }}
+                        {% if form.pstatus.errors %}
+                            <div class="text-danger">{{ form.pstatus.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Record Payment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Invoice Summary</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Invoice Number:</strong> {{ invoice.invno }}</p>
+                <p><strong>Order Number:</strong> {{ invoice.ordno.ordno }}</p>
+                <p><strong>Client:</strong> {{ invoice.ordno.cltid.cname }}</p>
+                <p><strong>Invoice Date:</strong> {{ invoice.recvdt }}</p>
+                <p><strong>Total Amount:</strong> <span class="currency">{{ invoice.netamt }}</span></p>
+                <p><strong>Advance Payment:</strong> <span class="currency">{{ invoice.advpay }}</span></p>
+                <p><strong>Remaining Payment:</strong> <span class="currency">{{ invoice.rempay }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

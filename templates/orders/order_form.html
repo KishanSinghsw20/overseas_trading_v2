@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Order - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_list' %}">Orders</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create Order</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create New Order</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if not user.client_profile %}
+                    <div class="mb-3">
+                        <label for="id_cltid" class="form-label">Client</label>
+                        {{ form.cltid }}
+                        {% if form.cltid.errors %}
+                            <div class="text-danger">{{ form.cltid.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_reqdt" class="form-label">Required Date</label>
+                        {{ form.reqdt }}
+                        {% if form.reqdt.errors %}
+                            <div class="text-danger">{{ form.reqdt.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Order</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

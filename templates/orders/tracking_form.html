@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Tracking Point - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_list' %}">Orders</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'order_detail' delivery.invno.ordno.ordno %}">Order {{ delivery.invno.ordno.ordno }}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'delivery_tracking' delivery.delcode %}">Delivery Tracking</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add Tracking Point</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Add Tracking Point for Delivery {{ delivery.delcode }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_cloc" class="form-label">Location</label>
+                        {{ form.cloc }}
+                        {% if form.cloc.errors %}
+                            <div class="text-danger">{{ form.cloc.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_transno" class="form-label">Transport Number</label>
+                        {{ form.transno }}
+                        {% if form.transno.errors %}
+                            <div class="text-danger">{{ form.transno.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_dtreach" class="form-label">Date Reached</label>
+                            {{ form.dtreach }}
+                            {% if form.dtreach.errors %}
+                                <div class="text-danger">{{ form.dtreach.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_tmreach" class="form-label">Time Reached (24-hour format)</label>
+                            {{ form.tmreach }}
+                            {% if form.tmreach.errors %}
+                                <div class="text-danger">{{ form.tmreach.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_tremks" class="form-label">Remarks</label>
+                        {{ form.tremks }}
+                        {% if form.tremks.errors %}
+                            <div class="text-danger">{{ form.tremks.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Tracking Point</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

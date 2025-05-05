@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Branch Stock for {{ product.pname }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_detail' product.prodid %}">{{ product.pname }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Update Branch Stock</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Update Branch Stock for {{ product.pname }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_branch" class="form-label">Branch</label>
+                        {{ form.branch }}
+                        {% if form.branch.errors %}
+                            <div class="text-danger">{{ form.branch.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_qty" class="form-label">Quantity</label>
+                        {{ form.qty }}
+                        {% if form.qty.errors %}
+                            <div class="text-danger">{{ form.qty.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_unit" class="form-label">Unit</label>
+                        {{ form.unit }}
+                        {% if form.unit.errors %}
+                            <div class="text-danger">{{ form.unit.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_type" class="form-label">Type</label>
+                        {{ form.type }}
+                        {% if form.type.errors %}
+                            <div class="text-danger">{{ form.type.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Update Branch Stock</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

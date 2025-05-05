@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Client {{ client.cname }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'client_list' %}">Clients</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ client.cname }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ client.cname }}</h1>
+    <div>
+        <a href="{% url 'order_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create Order for Client
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Client Information</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Client ID:</th>
+                        <td>{{ client.cltid }}</td>
+                    </tr>
+                    <tr>
+                        <th>Company Name:</th>
+                        <td>{{ client.cname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Business Type:</th>
+                        <td>{{ client.btype }}</td>
+                    </tr>
+                    <tr>
+                        <th>Registration Date:</th>
+                        <td>{{ client.cregdt }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Contact Information</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Contact Person:</th>
+                        <td>{{ client.ccperson }}</td>
+                    </tr>
+                    <tr>
+                        <th>Designation:</th>
+                        <td>{{ client.cdesig }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ client.cemail }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone:</th>
+                        <td>{{ client.cph }}</td>
+                    </tr>
+                    <tr>
+                        <th>Alternate Phone:</th>
+                        <td>{{ client.cphalt|default:"Not provided" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Fax:</th>
+                        <td>{{ client.cfax|default:"Not provided" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Address</h4>
+            </div>
+            <div class="card-body">
+                <p>{{ client.cadd|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Company Profile</h4>
+            </div>
+            <div class="card-body">
+                <p>{{ client.profile|linebreaks }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Client Orders</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Order Date</th>
+                                <th>Required Date</th>
+                                <th>Total Amount</th>
+                                <th>Invoice Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in client.ordmast_set.all %}
+                            <tr>
+                                <td>{{ order.ordno }}</td>
+                                <td>{{ order.ordt }}</td>
+                                <td>{{ order.reqdt }}</td>
+                                <td><span class="currency">{{ order.totamt }}</span></td>
+                                <td>
+                                    {% if order.invoice_set.exists %}
+                                        {% with invoice=order.invoice_set.first %}
+                                            {% if invoice.rempay == 0 %}
+                                            <span class="badge bg-success">Paid</span>
+                                            {% elif invoice.rempay < invoice.netamt %}
+                                            <span class="badge bg-warning text-dark">Partially Paid</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Unpaid</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                    <span class="badge bg-secondary">No Invoice</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'order_detail' order.ordno %}" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No orders found for this client.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

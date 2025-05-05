@@ -4,105 +4,105 @@
 
 {% block extra_css %}
 <style>
-    #tracking-map {
-        height: 400px;
-        width: 100%;
-    }
-    .tracking-timeline {
-        position: relative;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+#tracking-map {
+    height: 400px;
+    width: 100%;
+}
+.tracking-timeline {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.tracking-timeline::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    background-color: #0d6efd;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -3px;
+}
+.tracking-container {
+    padding: 10px 40px;
+    position: relative;
+    background-color: inherit;
+    width: 50%;
+}
+.tracking-container::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    right: -13px;
+    background-color: white;
+    border: 4px solid #0d6efd;
+    top: 15px;
+    border-radius: 50%;
+    z-index: 1;
+}
+.left {
+    left: 0;
+}
+.right {
+    left: 50%;
+}
+.left::before {
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 22px;
+    width: 0;
+    z-index: 1;
+    right: 30px;
+    border: medium solid #f8f9fa;
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent #f8f9fa;
+}
+.right::before {
+    content: " ";
+    height: 0;
+    position: absolute;
+    top: 22px;
+    width: 0;
+    z-index: 1;
+    left: 30px;
+    border: medium solid #f8f9fa;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent #f8f9fa transparent transparent;
+}
+.right::after {
+    left: -12px;
+}
+.tracking-content {
+    padding: 20px 30px;
+    background-color: #f8f9fa;
+    position: relative;
+    border-radius: 6px;
+}
+
+@media screen and (max-width: 600px) {
     .tracking-timeline::after {
-        content: '';
-        position: absolute;
-        width: 6px;
-        background-color: #0d6efd;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        margin-left: -3px;
+        left: 31px;
     }
     .tracking-container {
-        padding: 10px 40px;
-        position: relative;
-        background-color: inherit;
-        width: 50%;
+        width: 100%;
+        padding-left: 70px;
+        padding-right: 25px;
     }
-    .tracking-container::after {
-        content: '';
-        position: absolute;
-        width: 25px;
-        height: 25px;
-        right: -13px;
-        background-color: white;
-        border: 4px solid #0d6efd;
-        top: 15px;
-        border-radius: 50%;
-        z-index: 1;
-    }
-    .left {
-        left: 0;
-    }
-    .right {
-        left: 50%;
-    }
-    .left::before {
-        content: " ";
-        height: 0;
-        position: absolute;
-        top: 22px;
-        width: 0;
-        z-index: 1;
-        right: 30px;
-        border: medium solid #f8f9fa;
-        border-width: 10px 0 10px 10px;
-        border-color: transparent transparent transparent #f8f9fa;
-    }
-    .right::before {
-        content: " ";
-        height: 0;
-        position: absolute;
-        top: 22px;
-        width: 0;
-        z-index: 1;
-        left: 30px;
+    .tracking-container::before {
+        left: 60px;
         border: medium solid #f8f9fa;
         border-width: 10px 10px 10px 0;
         border-color: transparent #f8f9fa transparent transparent;
     }
-    .right::after {
-        left: -12px;
+    .left::after, .right::after {
+        left: 18px;
     }
-    .tracking-content {
-        padding: 20px 30px;
-        background-color: #f8f9fa;
-        position: relative;
-        border-radius: 6px;
+    .right {
+        left: 0%;
     }
-    
-    @media screen and (max-width: 600px) {
-        .tracking-timeline::after {
-            left: 31px;
-        }
-        .tracking-container {
-            width: 100%;
-            padding-left: 70px;
-            padding-right: 25px;
-        }
-        .tracking-container::before {
-            left: 60px;
-            border: medium solid #f8f9fa;
-            border-width: 10px 10px 10px 0;
-            border-color: transparent #f8f9fa transparent transparent;
-        }
-        .left::after, .right::after {
-            left: 18px;
-        }
-        .right {
-            left: 0%;
-        }
-    }
+}
 </style>
 {% endblock %}
 
@@ -124,7 +124,7 @@
             <div class="card-header bg-primary text-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0">Delivery Tracking</h4>
-                    {% if user.is_admin %}
+                    {% if not user.client_profile %}
                     <a href="{% url 'add_tracking' delivery.delcode %}" class="btn btn-light">
                         <i class="bi bi-plus-circle"></i> Add Tracking Point
                     </a>
@@ -227,70 +227,70 @@
 {% block extra_js %}
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
 <script>
-    function initMap() {
-        var trackingMap = document.getElementById('tracking-map');
-        var trackingPoints = JSON.parse(trackingMap.getAttribute('data-tracking-points') || '[]');
-        
-        // Default center (India)
-        var center = { lat: 20.5937, lng: 78.9629 };
-        var zoom = 5;
-        
-        // If we have tracking points, center on the first one
-        if (trackingPoints.length > 0) {
-            center = { lat: trackingPoints[0].lat, lng: trackingPoints[0].lng };
-            zoom = 8;
-        }
-        
-        var map = new google.maps.Map(trackingMap, {
-            center: center,
-            zoom: zoom
-        });
-        
-        // Add markers for tracking points
-        var bounds = new google.maps.LatLngBounds();
-        var path = [];
-        
-        trackingPoints.forEach(function(point, index) {
-            var position = { lat: point.lat, lng: point.lng };
-            
-            // Add marker
-            var marker = new google.maps.Marker({
-                position: position,
-                map: map,
-                title: point.location,
-                label: (index + 1).toString()
-            });
-            
-            // Add info window
-            var infoWindow = new google.maps.InfoWindow({
-                content: '<div><h6>' + point.location + '</h6>' +
-                         '<p>Date: ' + point.date + '</p>' +
-                         '<p>Time: ' + point.time + ' hours</p>' +
-                         '<p>Remarks: ' + point.remarks + '</p></div>'
-            });
-            
-            marker.addListener('click', function() {
-                infoWindow.open(map, marker);
-            });
-            
-            // Add to bounds and path
-            bounds.extend(position);
-            path.push(position);
-        });
-        
-        // Draw path between points if we have more than one
-        if (path.length > 1) {
-            var deliveryPath = new google.maps.Polyline({
-                path: path,
-                geodesic: true,
-                strokeColor: '#0d6efd',
-                strokeOpacity: 1.0,
-                strokeWeight: 3
-            });
-            
-            deliveryPath.setMap(map);
-            map.fitBounds(bounds);
-        }
+function initMap() {
+    var trackingMap = document.getElementById('tracking-map');
+    var trackingPoints = JSON.parse(trackingMap.getAttribute('data-tracking-points') || '[]');
+    
+    // Default center (India)
+    var center = { lat: 20.5937, lng: 78.9629 };
+    var zoom = 5;
+    
+    // If we have tracking points, center on the first one
+    if (trackingPoints.length > 0) {
+        center = { lat: trackingPoints[0].lat, lng: trackingPoints[0].lng };
+        zoom = 8;
     }
+    
+    var map = new google.maps.Map(trackingMap, {
+        center: center,
+        zoom: zoom
+    });
+    
+    // Add markers for tracking points
+    var bounds = new google.maps.LatLngBounds();
+    var path = [];
+    
+    trackingPoints.forEach(function(point, index) {
+        var position = { lat: point.lat, lng: point.lng };
+        
+        // Add marker
+        var marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: point.location,
+            label: (index + 1).toString()
+        });
+        
+        // Add info window
+        var infoWindow = new google.maps.InfoWindow({
+            content: '<div><h6>' + point.location + '</h6>' +
+                     '<p>Date: ' + point.date + '</p>' +
+                     '<p>Time: ' + point.time + ' hours</p>' +
+                     '<p>Remarks: ' + point.remarks + '</p></div>'
+        });
+        
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
+        });
+        
+        // Add to bounds and path
+        bounds.extend(position);
+        path.push(position);
+    });
+    
+    // Draw path between points if we have more than one
+    if (path.length > 1) {
+        var deliveryPath = new google.maps.Polyline({
+            path: path,
+            geodesic: true,
+            strokeColor: '#0d6efd',
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+        });
+        
+        deliveryPath.setMap(map);
+        map.fitBounds(bounds);
+    }
+}
 </script>
 {% endblock %}

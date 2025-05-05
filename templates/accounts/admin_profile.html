@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Profile - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Admin Profile</h1>
+    <div>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Account Information</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <th>Username:</th>
+                        <td>{{ user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Login:</th>
+                        <td>{{ user.last_login }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date Joined:</th>
+                        <td>{{ user.date_joined }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Admin Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{% url 'client_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people"></i> Manage Clients
+                    </a>
+                    <a href="{% url 'supplier_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-building"></i> Manage Suppliers
+                    </a>
+                    <a href="{% url 'branch_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-geo-alt"></i> Manage Branches
+                    </a>
+                    <a href="{% url 'product_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-box-seam"></i> Manage Products
+                    </a>
+                    <a href="{% url 'order_list' %}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-cart"></i> Manage Orders
+                    </a>
+                    <a href="/admin/" class="list-group-item list-group-item-action">
+                        <i class="bi bi-gear"></i> Django Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Overseas Trading{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'branch_list' %}">Branches</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_branch" class="form-label">Branch Code</label>
+                        {{ form.branch }}
+                        {% if form.branch.errors %}
+                            <div class="text-danger">{{ form.branch.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bloc" class="form-label">Location</label>
+                        {{ form.bloc }}
+                        {% if form.bloc.errors %}
+                            <div class="text-danger">{{ form.bloc.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_badd" class="form-label">Address</label>
+                        {{ form.badd }}
+                        {% if form.badd.errors %}
+                            <div class="text-danger">{{ form.badd.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_bph" class="form-label">Phone</label>
+                            {{ form.bph }}
+                            {% if form.bph.errors %}
+                                <div class="text-danger">{{ form.bph.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_baltph" class="form-label">Alternate Phone</label>
+                            {{ form.baltph }}
+                            {% if form.baltph.errors %}
+                                <div class="text-danger">{{ form.baltph.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bfax" class="form-label">Fax</label>
+                        {{ form.bfax }}
+                        {% if form.bfax.errors %}
+                            <div class="text-danger">{{ form.bfax.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bmname" class="form-label">Manager Name</label>
+                        {{ form.bmname }}
+                        {% if form.bmname.errors %}
+                            <div class="text-danger">{{ form.bmname.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_bmemail" class="form-label">Manager Email</label>
+                        {{ form.bmemail }}
+                        {% if form.bmemail.errors %}
+                            <div class="text-danger">{{ form.bmemail.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_terminus" class="form-label">Terminus</label>
+                        {{ form.terminus }}
+                        {% if form.terminus.errors %}
+                            <div class="text-danger">{{ form.terminus.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_buname" class="form-label">Username</label>
+                            {{ form.buname }}
+                            {% if form.buname.errors %}
+                                <div class="text-danger">{{ form.buname.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_bpassw" class="form-label">Password</label>
+                            {{ form.bpassw }}
+                            {% if form.bpassw.errors %}
+                                <div class="text-danger">{{ form.bpassw.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_tdet" class="form-label">Terminal Details</label>
+                        {{ form.tdet }}
+                        {% if form.tdet.errors %}
+                            <div class="text-danger">{{ form.tdet.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Save Branch</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
