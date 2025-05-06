@@ -24,6 +24,14 @@
             <div class="card-body">
                 <form method="POST">
                     {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_delcode" class="form-label">Delivery Code</label>
+                        {{ form.delcode }}
+                        {% if form.delcode.errors %}
+                            <div class="text-danger">{{ form.delcode.errors }}</div>
+                        {% endif %}
+                    </div>
                     
                     <div class="mb-3">
                         <label for="id_cloc" class="form-label">Location</label>

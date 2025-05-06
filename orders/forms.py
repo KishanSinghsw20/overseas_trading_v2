@@ -68,7 +68,7 @@ class PaymentForm(forms.ModelForm):
         model = PayDet
         fields = [
             "invno",
-            "payno",
+            # "payno",
             "paytype",
             "ddchqno",
             "ddchqdt",
@@ -87,7 +87,7 @@ class DeliveryForm(forms.ModelForm):
         fields = [
             "invno",
             "branch",
-            "delcode",
+            # "delcode",
             "delmode",
             "deldt",
             "delstatus",
@@ -105,7 +105,7 @@ class TrackingForm(forms.ModelForm):
     class Meta:
         model = DeliveryTracking
         fields = [
-            "trackingid",
+            # "trackingid",
             "delcode",
             "cloc",
             "transno",

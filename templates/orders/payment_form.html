@@ -26,6 +26,14 @@
                     {% csrf_token %}
                     
                     <div class="mb-3">
+                        <label for="id_invno" class="form-label">Invoice</label>
+                        {{ form.invno }}
+                        {% if form.invno.errors %}
+                            <div class="text-danger">{{ form.invno.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
                         <label for="id_paytype" class="form-label">Payment Type</label>
                         {{ form.paytype }}
                         {% if form.paytype.errors %}

@@ -1,3 +1,4 @@
+from decimal import Decimal
 import json
 from django import forms
 from django.forms import ValidationError
@@ -355,12 +356,14 @@ def add_payment(request, invno):
                 payment.payno = f"PAY{uuid.uuid4().hex[:8].upper()}"
                 payment.save()
 
+                # Get amount as Decimal
+                amount = Decimal(request.POST.get("amount", "0") or "0")
+
                 # Update invoice payment status
                 if payment.payfor == "Advance":
-                    invoice.advpay += float(request.POST.get("amount", 0))
+                    invoice.advpay += amount
                     invoice.rempay = invoice.netamt - invoice.advpay
                 else:
-                    amount = float(request.POST.get("amount", 0))
                     if amount > invoice.rempay:
                         amount = invoice.rempay
                     invoice.rempay -= amount
@@ -384,6 +387,7 @@ def add_delivery(request, invno):
 
     if request.method == "POST":
         form = DeliveryForm(request.POST)
+
         if form.is_valid():
             delivery = form.save(commit=False)
             delivery.invno = invoice
@@ -392,6 +396,8 @@ def add_delivery(request, invno):
 
             messages.success(request, "Delivery information added successfully!")
             return redirect("invoice_detail", invno=invoice.invno)
+        else:
+            print("Form errors:", form.errors)  # Debug
     else:
         form = DeliveryForm(initial={"invno": invoice})
 

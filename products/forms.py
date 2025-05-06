@@ -29,10 +29,10 @@ class ProductForm(forms.ModelForm):
 class ProductStockForm(forms.ModelForm):
     class Meta:
         model = ProdStockMast
-        fields = ["prodid", "stktype", "stkqty", "stkunit", "currstk"]
+        fields = ["stktype", "stkqty", "stkunit", "currstk"]  # "prodid",
 
 
 class BranchStockForm(forms.ModelForm):
     class Meta:
         model = BranchStk
-        fields = ["branch", "prodid", "qty", "unit", "type"]
+        fields = ["branch", "qty", "unit", "type"]  # "prodid",
